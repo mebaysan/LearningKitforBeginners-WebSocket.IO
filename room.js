@@ -8,12 +8,23 @@ server.listen(3000);
 const io = socketio.listen(server);
 
 io.on('connection', (socket) => {
-    console.log('Sunucuya biri bağlandı!');
+    console.log(socket.id); // socket id'i aldık
+
+    socket.join('room 1'); // default olarak odalara soktuk
+    socket.join('room 2');
+    socket.join('room 3', () => { // bağlı olduğu odaları listeledik
+        const rooms = Object.keys(socket.rooms);
+        console.log(rooms);
+    });
+
+
     socket.on('joinRoom', (data) => {
         socket.join(data.name, () => { // 1.parametre ahangi odaya katılmak istediğimizi söyler. join methodu oda varsa katılır yoksa odayı oluşturur
             // let count = io.sockets.adapter.rooms[data.name].length; // data.name adlı odadaki datalara erişmek istiyorum. hangi datalar? length adlı data
             io.to(data.name).emit('new join', { count: getOnlineCount(io, data) }); // data.name burada oda adıdır. socket.to diyerek mesaj gönderebiliriz.
             socket.emit('log', { message: 'odaya girdiniz' });
+            const rooms = Object.keys(socket.rooms);
+            console.log(rooms);
         }); // socket.to diyerek aktif tcp bağlantısı olan hişi hariç herkese gönderecek ama io.to dersek aktif tcp olan da dahil herkese gönderecek
     });
 
