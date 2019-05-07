@@ -1,16 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <script src="./node_modules/socket.io-client/dist/socket.io.js"></script> <!--  socket modülü sayfamıza dahil ediyoruz-->
+    <script src="./node_modules/socket.io-client/dist/socket.io.js"></script>
+    <!--  socket modülü sayfamıza dahil ediyoruz-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <!--jquery cdn'i sayfaya dahil ettik(aşağıda selamVer event'i tetiklemek için kullanacağız) -->
     <script>
-        const socket = io.connect('http://localhost:3000/'); // 7. sayfada dahil ettiğimiz modülden gelen io nesnesi ve altındaki connect methodu ile socket bağlantısı gerçekleşiyor
+        $(() => {
+            const socket = io.connect('http://localhost:3000/'); // 7. sayfada dahil ettiğimiz modülden gelen io nesnesi ve altındaki connect methodu ile socket bağlantısı gerçekleşiyor
+            $('#selamVer').on('click', () => { // aşağıda oluşturduğumuz butona on eventi tetiklenince
+                socket.emit('selamVer',{name:'Baysan'}); // 2. parametre olarak bir data gönderebiliriz
+                // sunucu tarafında karşılayacağımız isim neyse onu ilk parametre olarak veriyoruz
+            }); // emit ile nerden mesaj göndermek istiyorsak emit işlemi yapıyoruz
+            socket.on('merhabaDe',(data)=>{
+                $('#merhaba').html(`sunucu tarafından merhaba gönderildi!\n ${data.name}`);
+            });
+        });
     </script>
     <title>SocketIO</title>
 </head>
+
 <body>
     Merhaba ben html sayfası
+    <button id="selamVer">Selam Ver</button>
+    <div id="merhaba"></div>
 </body>
+
 </html>
