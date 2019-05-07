@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="./node_modules/socket.io-client/dist/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <title>Room</title>
+    <script>
+        $(() => {
+            const socket = io.connect('http://localhost:3000/');
+            $('#joinRoom').on('click', () => {
+                socket.emit('joinRoom', { name: $('#roomName').val() })
+            });
+            socket.on('new join',(data)=>{
+                $('#userCount').html(`Bu odada <b>${data.count}</b> kişi var`);
+            });
+            socket.on('log',(data)=>{
+                $('.logs').append(data.message);
+            });
+        });
+    </script>
+</head>
+
+<body>
+
+    <input id="roomName">
+    <button id="joinRoom">Join</button>
+    <div class="logs"></div>
+    <div id="userCount"></div>
+</body>
+
+</html>
