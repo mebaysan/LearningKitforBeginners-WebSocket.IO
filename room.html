@@ -15,7 +15,22 @@
     </style>
     <script>
         $(() => {
-            const socket = io.connect('http://localhost:3000/');
+            const socket = io.connect('http://localhost:30001/', {
+                reconnectionAttempts: 2, // yanlış adres olması durumunda sayfaya sadece 2 kere bağlanmayı dener
+                reconnectionDelay: 3000, // 3000 milisaniye sonra yeniden bağlanmayı deneyecektir.
+                reconnection: true       // eğer false verirsek ilk bağlanmayı deneyecektir başaramazsa hiç bağlanmaz
+            });
+            socket.on('reconnect_attempt', () => { // hazır bir eventtir, yeniden bağlanmaya çalışıyorsa demektir
+                $('.reconnectStatus').html('Yeniden Bağlanmaya Çalışılıyor');
+            });
+            socket.on('reconnect_error', () => { // hazır bir eventtir yeniden bağlanma başarısız olduysa demektir
+                setTimeout(() => {
+                    $('.reconnectStatus').html('Yeniden Bağlanma Başarısız');
+                }, 2000);
+            });
+            socket.on('reconnect', () => { // hazır bir eventtir. yeniden bağlanma başarılı olursa demektir.
+                $('.reconnectStatus').html('Yeniden Bağlanma Başarılı!');
+            });
             $('#joinRoom').on('click', () => {
                 socket.emit('joinRoom', { name: $('#roomName').val() })
             });
@@ -45,7 +60,7 @@
 </head>
 
 <body>
-
+    <div class="reconnectStatus"></div>
     <input id="roomName">
     <button id="joinRoom">Join</button>
     <button id="leaveRoom">Leave</button>
